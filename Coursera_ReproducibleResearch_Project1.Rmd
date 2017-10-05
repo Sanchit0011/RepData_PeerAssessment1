@@ -11,7 +11,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 This is the first project in Coursera's Reproducible Research course. The purpose of this project is to answer a series of questions using data collected from a personal activity monitoring device such as Fitbit.
 
-##Data
+## Data
 
 The data for this assignment was downloaded from the course web site:
 
@@ -25,7 +25,7 @@ The variables included in this dataset are:
 
 The dataset is stored in a comma-separated-value (CSV) file and there are a total of 17,568 observations in this dataset.
 
-##Loading and preprocessing the data
+## Loading and preprocessing the data
 Download, unzip and load data into R. Store it in a variable called ActivityData. Convert the date variable in ActivityData to a "Data" variable.
 
 ```{r Script1}
@@ -39,13 +39,13 @@ download.file(fileUrl, "ActivityData.zip")
 unzip(zipfile = "ActivityData.zip", exdir = "C:/R")
 
 #Reading the data in R
-ActivityData <- read.csv("activity.csv")
+ActivityData <- read.csv("C:/R/activity.csv")
 
 #Converting the date variable to type "Date"
 ActivityData$date <- as.Date(ActivityData$date)
 ```
 
-##What is mean total number of steps taken per day?
+## What is mean total number of steps taken per day?
 
 Calculate the total number of steps by day, create Histogram, and calculate mean
 and median.
@@ -69,7 +69,7 @@ mediansteps <- median(totalsteps$steps)
 
 The mean is 10766.1887 and the median is 10765.
 
-##What is the average daily activity pattern?
+## What is the average daily activity pattern?
 
 * Calculate average steps for each interval for all days.
 * Plot the Average Number Steps per Day by Interval.
@@ -88,7 +88,7 @@ maxsteps <- averagesteps[which.max(averagesteps$steps), 1]
 
 The 5-minute interval, on average across all the days in the data set, containing the maximum number of steps is 835.
 
-##Impute missing values. Compare imputed to non-imputed data.
+## Impute missing values. Compare imputed to non-imputed data.
 
 Missing Data needs to be imputed. Only a simple imputation approach was required for this assignment. Missing values were imputed by inserting the average for each interval.
 
@@ -149,7 +149,7 @@ totaldiff <- sum(totalsteps2$steps) - sum(totalsteps$steps)
 
 The total difference is 75363.32
 
-##Are there differences in activity patterns between weekdays and weekends?
+## Are there differences in activity patterns between weekdays and weekends?
 
 Create a plot to compare and contrast number of steps between the week and weekend.
 

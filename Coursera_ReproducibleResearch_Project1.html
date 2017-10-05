@@ -151,7 +151,7 @@ download.file(fileUrl, &quot;ActivityData.zip&quot;)
 unzip(zipfile = &quot;ActivityData.zip&quot;, exdir = &quot;C:/R&quot;)
 
 #Reading the data in R
-ActivityData &lt;- read.csv(&quot;activity.csv&quot;)
+ActivityData &lt;- read.csv(&quot;C:/R/activity.csv&quot;)
 
 #Converting the date variable to type &quot;Date&quot;
 ActivityData$date &lt;- as.Date(ActivityData$date)</code></pre>
