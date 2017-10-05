@@ -67,6 +67,10 @@ meansteps <- mean(totalsteps$steps)
 mediansteps <- median(totalsteps$steps)
 ```
 
+![](C:\R\figure1.png)
+
+
+
 The mean is 10766.1887 and the median is 10765.
 
 ## What is the average daily activity pattern?
@@ -85,6 +89,8 @@ with(averagesteps, plot(interval, steps, type = "l", xlab = "Interval", ylab = "
 #Finding the interval in which maximum number of steps were taken
 maxsteps <- averagesteps[which.max(averagesteps$steps), 1]
 ```
+
+![](C:/R/figure2.png)
 
 The 5-minute interval, on average across all the days in the data set, containing the maximum number of steps is 835.
 
@@ -115,6 +121,9 @@ par(mfrow = c(1,2))
 hist(totalsteps$steps, main = "With NA's", xlab = "Number of steps", col = "red", ylim = c(0,35))
 hist(totalsteps2$steps, main = "Without NA's", xlab = "Number of steps", col = "green")
 ```
+
+
+![](C:/R/figure3.png)
 
 Calculate new mean and median for imputed data.
 
@@ -172,5 +181,7 @@ averagesteps2 <- aggregate(steps ~ interval + daytype, ActivityData2, mean)
 #Creating plot of Average steps per day by interval weekday vs. weekend
 xyplot(averagesteps2$steps ~ averagesteps2$interval|averagesteps2$daytype, main = "Average steps per day by interval", xlab = "Interval", ylab = "Steps", type = "l")
 ```
+
+![](C:/R/figure4.png)
 
 There is a higher peak earlier on weekdays, and more overall activity on weekends.
