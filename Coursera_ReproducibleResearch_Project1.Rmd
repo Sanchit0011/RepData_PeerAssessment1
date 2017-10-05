@@ -1,0 +1,176 @@
+---
+title: "Reproducible Research Project 1"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Introduction
+
+This is the first project in Coursera's Reproducible Research course. The purpose of this project is to answer a series of questions using data collected from a personal activity monitoring device such as Fitbit.
+
+##Data
+
+The data for this assignment was downloaded from the course web site:
+
+* [Activity Monitoring Data](https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip)
+
+The variables included in this dataset are:
+
+* **steps:** Number of steps taking in a 5-minute interval (missing values are coded as NA)
+* **date:** The date on which the measurement was taken in YYYY-MM-DD format
+* **interval:** Identifier for the 5-minute interval in which measurement was taken
+
+The dataset is stored in a comma-separated-value (CSV) file and there are a total of 17,568 observations in this dataset.
+
+##Loading and preprocessing the data
+Download, unzip and load data into R. Store it in a variable called ActivityData. Convert the date variable in ActivityData to a "Data" variable.
+
+```{r Script1}
+#The file url
+fileUrl <- "https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip"
+
+#Downloading the zip file in the working directory
+download.file(fileUrl, "ActivityData.zip")
+
+#Extracting the zip file in the working directory 
+unzip(zipfile = "ActivityData.zip", exdir = "C:/R")
+
+#Reading the data in R
+ActivityData <- read.csv("activity.csv")
+
+#Converting the date variable to type "Date"
+ActivityData$date <- as.Date(ActivityData$date)
+```
+
+##What is mean total number of steps taken per day?
+
+Calculate the total number of steps by day, create Histogram, and calculate mean
+and median.
+
+```{r script2}
+#Loading the dplyr library
+library(dplyr)
+
+#Taking aggregate of ActivityData according to total number of steps per day
+totalsteps <- aggregate(steps ~ date, ActivityData, sum)
+
+#Creating histogram of total number of steps per day
+hist(totalsteps$steps, main = "Histogram of number of steps per day", xlab = "Number of steps", col = "red")
+
+#Calculating mean of steps
+meansteps <- mean(totalsteps$steps)
+
+#Calculating median of steps
+mediansteps <- median(totalsteps$steps)
+```
+
+The mean is 10766.1887 and the median is 10765.
+
+##What is the average daily activity pattern?
+
+* Calculate average steps for each interval for all days.
+* Plot the Average Number Steps per Day by Interval.
+* Find interval with most average steps.
+
+```{r script3}
+#Aggregating ActivityData according to average number of steps per interval
+averagesteps <- aggregate(steps~interval, ActivityData, mean)
+
+#Creating time series plot of average number of steps per day by interval
+with(averagesteps, plot(interval, steps, type = "l", xlab = "Interval", ylab = "Number of steps", main = "Average number of steps per day by interval" ))
+
+#Finding the interval in which maximum number of steps were taken
+maxsteps <- averagesteps[which.max(averagesteps$steps), 1]
+```
+
+The 5-minute interval, on average across all the days in the data set, containing the maximum number of steps is 835.
+
+##Impute missing values. Compare imputed to non-imputed data.
+
+Missing Data needs to be imputed. Only a simple imputation approach was required for this assignment. Missing values were imputed by inserting the average for each interval.
+
+```{r script4a}
+#Calculating total missing data
+sum(is.na(ActivityData))
+
+#Creating new data set AvtivityData2 containg imputed values
+ActivityData2 <- ActivityData
+ActivityData2$steps[is.na(ActivityData2$steps)] <- mean(na.omit(ActivityData$steps))
+ActivityData2[as.character(ActivityData2$date) == "2012-10-01", 1] <- 0
+```
+
+Zeroes were imputed for 10-01-2012 because it was the first day and would have been over 9,000 steps higher than the following day, which had only 126 steps. NAs then were assumed to be zeros to fit the rising trend of the data.
+
+Recount total steps by day and create Histogram.
+
+```{r script 4b}
+#Aggregating ActivityData2 according to total number of steps per day
+totalsteps2 <- aggregate(steps ~ date, ActivityData2, sum)
+
+#Creating histograms for number of steps with NA's vs Without NA's
+par(mfrow = c(1,2))
+hist(totalsteps$steps, main = "With NA's", xlab = "Number of steps", col = "red", ylim = c(0,35))
+hist(totalsteps2$steps, main = "Without NA's", xlab = "Number of steps", col = "green")
+```
+
+Calculate new mean and median for imputed data.
+
+```{r script 4c}
+#Calculating mean value of steps without NA's
+meansteps2 <- mean(totalsteps2$steps)
+
+#Calculating median value of steps without NA's
+mediansteps2 <- median(totalsteps2$steps)
+```
+
+The new mean is 10589.7 and the new median is 10766.1887
+
+Calculate difference between imputed and non-imputed data.
+
+```{r script 4d}
+#Calculating difference between mean without NA's vs mean with NA's
+meandiff <- meansteps2 - meansteps 
+
+#Calculating difference between median without NA's vs mean with NA's
+mediandiff <- mediansteps2 - mediansteps
+```
+
+The mean difference is -176.5 and the median difference is 1.188
+
+Calculate total difference.
+
+```{r script 4e}
+#Calculating difference between total number of steps without NA's vs total number of steps with NA's
+totaldiff <- sum(totalsteps2$steps) - sum(totalsteps$steps)
+```
+
+The total difference is 75363.32
+
+##Are there differences in activity patterns between weekdays and weekends?
+
+Create a plot to compare and contrast number of steps between the week and weekend.
+
+```{r script 5a}
+
+#Loading lattice library
+library(lattice)
+
+#Creating a vector called weekdays 
+weekdays <- c("Monday", "Tuesday", "Wednesday", "Thursday", 
+              "Friday")
+
+#Creating a factor variable daytype which has the levels "weekdays" and "weekends"
+ActivityData2$daytype = as.factor(ifelse(is.element(weekdays(as.Date(ActivityData2$date)),weekdays), "Weekday", "Weekend"))
+
+#Aggregating ActivityData2 according to the average number of steps per interval and daytype 
+averagesteps2 <- aggregate(steps ~ interval + daytype, ActivityData2, mean)
+
+
+#Creating plot of Average steps per day by interval weekday vs. weekend
+xyplot(averagesteps2$steps ~ averagesteps2$interval|averagesteps2$daytype, main = "Average steps per day by interval", xlab = "Interval", ylab = "Steps", type = "l")
+```
+
+There is a higher peak earlier on weekdays, and more overall activity on weekends.
